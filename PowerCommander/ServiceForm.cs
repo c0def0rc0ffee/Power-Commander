@@ -260,8 +260,11 @@ namespace PowerCommander
         /// </summary>
         private void TriggerShutdownSequence()
         {
-            secondsLeft = 0;
-            ShutdownMachine();
+            if (MessageBox.Show("Are you sure you wish to shut down your PC?", "Confirm Shutdown", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                secondsLeft = 0;
+                ShutdownMachine();
+            }
         }
 
         /// <summary>
@@ -293,5 +296,10 @@ namespace PowerCommander
         }
 
         #endregion
+
+        private void ServiceForm_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }
