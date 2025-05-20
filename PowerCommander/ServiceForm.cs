@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -46,6 +47,33 @@ namespace PowerCommander
 
         #endregion
 
+
+
+        private const string AppName = "MyTrayApp"; // Replace with your actual app name
+        private const string RunKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Run";
+
+        private void SetRunOnStartup(bool enable)
+        {
+            using (var key = Registry.CurrentUser.OpenSubKey(RunKeyPath, true))
+            {
+                string exePath = $"\"{Application.ExecutablePath}\" --silent";
+
+                if (enable)
+                    key.SetValue(AppName, exePath);
+                else
+                    key.DeleteValue(AppName, false);
+            }
+        }
+
+        private bool IsRunOnStartupEnabled()
+        {
+            using (var key = Registry.CurrentUser.OpenSubKey(RunKeyPath, false))
+            {
+                string exePath = $"\"{Application.ExecutablePath}\" --silent";
+                string value = key?.GetValue(AppName) as string;
+                return value == exePath;
+            }
+        }
         #region Tray Icon Setup
 
         /// <summary>
@@ -62,6 +90,22 @@ namespace PowerCommander
 
             var trayMenu = new ContextMenuStrip();
 
+            if (settings.EnableStartupToggle)
+            {
+                var runOnStartupItem = new ToolStripMenuItem("Run on startup")
+                {
+                    Checked = IsRunOnStartupEnabled(),
+                    CheckOnClick = true
+                };
+
+                runOnStartupItem.Click += (_, __) =>
+                {
+                    SetRunOnStartup(runOnStartupItem.Checked);
+                };
+
+                trayMenu.Items.Add(runOnStartupItem);
+            }
+            
             // Show next scheduled time (read-only label)
             if (settings.ShowNextScheduledTime)
             {
@@ -90,7 +134,7 @@ namespace PowerCommander
             // Optional exit
             if (settings.EnableExitOption)
             {
-                trayMenu.Items.Add("Exit", null, (_, __) => Application.Exit());
+                trayMenu.Items.Add("Exit", null, (_, __) => TriggerAppExit());
             }
 
             trayIcon.ContextMenuStrip = trayMenu;
@@ -266,6 +310,19 @@ namespace PowerCommander
                 ShutdownMachine();
             }
         }
+
+        /// <summary>
+        /// Immediately triggers system shutdown, bypassing the countdown.
+        /// </summary>
+        private void TriggerAppExit()
+        {
+            if (MessageBox.Show("Are you sure you wish to exit?", "Confirm Goodbye", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                Application.Exit();
+            }
+        }
+
+
 
         /// <summary>
         /// Executes the system shutdown command.

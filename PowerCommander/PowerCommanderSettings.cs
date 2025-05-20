@@ -7,4 +7,5 @@ public class PowerCommanderSettings
     public bool ShowNextScheduledTime { get; set; } = true;
     public bool EnableExitOption { get; set; } = true;
     public bool EnableManualShutdown { get; set; } = true;
+    public bool EnableStartupToggle { get; set; } = true;
 }
