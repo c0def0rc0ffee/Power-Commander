@@ -25,6 +25,8 @@ namespace PowerCommander
         private Timer scheduleChecker;
         private PowerCommanderSettings settings;
 
+        private const string AppName = "Power Commander";
+        private const string RunKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Run";
         #endregion
 
         #region Constructor
@@ -47,11 +49,7 @@ namespace PowerCommander
 
         #endregion
 
-
-
-        private const string AppName = "MyTrayApp"; // Replace with your actual app name
-        private const string RunKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Run";
-
+        #region Tray Icon Setup
         private void SetRunOnStartup(bool enable)
         {
             using (var key = Registry.CurrentUser.OpenSubKey(RunKeyPath, true))
@@ -74,7 +72,7 @@ namespace PowerCommander
                 return value == exePath;
             }
         }
-        #region Tray Icon Setup
+
 
         /// <summary>
         /// Configures the system tray icon and context menu.
