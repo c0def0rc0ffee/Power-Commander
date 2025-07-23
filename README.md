@@ -4,8 +4,9 @@ Power Commander is a Windows system tray application that automatically prompts 
 
 ## Features
 
-- Scheduled shutdowns via `settings.json`
+- Scheduled shutdowns via `settings.json` (Created automatically)
 - A tray icon...wooo
+- Popup in the system tray
 
 ## Configuration
 
