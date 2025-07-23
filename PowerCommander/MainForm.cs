@@ -102,7 +102,7 @@ namespace PowerCommander
                 var defaultSettings = new PowerCommanderSettings
                 {
                     LoadService = true,
-                    ShutdownTimes = new List<string> { "21:00" }
+                    ShutdownTimes = new List<string> { "19:53" }
                 };
 
                 string defaultJson = JsonSerializer.Serialize(defaultSettings, new JsonSerializerOptions { WriteIndented = true });

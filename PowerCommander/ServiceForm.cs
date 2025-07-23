@@ -241,7 +241,14 @@ namespace PowerCommander
         /// Displays the shutdown confirmation prompt with a countdown.
         /// </summary>
         private void ShowShutdownPrompt()
-        {
+        { 
+            // Show tray notification
+            trayIcon.BalloonTipTitle = "Shutdown Pending";
+            trayIcon.BalloonTipText = $"System will shut down in {secondsLeft} seconds.";
+            trayIcon.BalloonTipIcon = ToolTipIcon.Warning;
+            trayIcon.Visible = true;
+            trayIcon.ShowBalloonTip(50000);
+
             var prompt = new Form
             {
                 Width = 300,
