@@ -97,25 +97,33 @@ namespace PowerCommander
         {
             string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.json");
 
+            var defaultSettings = new PowerCommanderSettings
+            {
+                LoadService = true,
+                ShutdownTimes = new List<string> { "19:53" }
+            };
+
             if (!File.Exists(path))
             {
-                var defaultSettings = new PowerCommanderSettings
-                {
-                    LoadService = true,
-                    ShutdownTimes = new List<string> { "19:53" }
-                };
-
                 string defaultJson = JsonSerializer.Serialize(defaultSettings, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(path, defaultJson);
 
                 return defaultSettings;
             }
 
-            string json = File.ReadAllText(path);
-            return JsonSerializer.Deserialize<PowerCommanderSettings>(json, new JsonSerializerOptions
+            try
             {
-                PropertyNameCaseInsensitive = true
-            });
+                string json = File.ReadAllText(path);
+                return JsonSerializer.Deserialize<PowerCommanderSettings>(json, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }) ?? defaultSettings;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to load settings: {ex.Message}", "Power Commander", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return defaultSettings;
+            }
         }
 
         #endregion
