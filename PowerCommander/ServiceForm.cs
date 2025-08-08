@@ -353,7 +353,29 @@ namespace PowerCommander
         /// </summary>
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            trayIcon.Visible = false;
+            // Ensure the tray icon is removed and disposed
+            if (trayIcon != null)
+            {
+                trayIcon.Visible = false;
+                trayIcon.Dispose();
+                trayIcon = null;
+            }
+
+            // Dispose active timers to release resources
+            if (countdownTimer != null)
+            {
+                countdownTimer.Stop();
+                countdownTimer.Dispose();
+                countdownTimer = null;
+            }
+
+            if (scheduleChecker != null)
+            {
+                scheduleChecker.Stop();
+                scheduleChecker.Dispose();
+                scheduleChecker = null;
+            }
+
             base.OnFormClosing(e);
         }
 
