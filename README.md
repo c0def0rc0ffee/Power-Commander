@@ -20,3 +20,4 @@ Create a `settings.json` file in the same folder as the executable:
   "enableExitOption": true,
   "enableManualShutdown": true
 }
+```
