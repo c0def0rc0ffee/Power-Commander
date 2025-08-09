@@ -52,24 +52,53 @@ namespace PowerCommander
         #region Tray Icon Setup
         private void SetRunOnStartup(bool enable)
         {
-            using (var key = Registry.CurrentUser.OpenSubKey(RunKeyPath, true))
+            try
             {
-                string exePath = $"\"{Application.ExecutablePath}\" --silent";
+                using (var key = Registry.CurrentUser.OpenSubKey(RunKeyPath, true) ??
+                                   Registry.CurrentUser.CreateSubKey(RunKeyPath))
+                {
+                    if (key == null)
+                    {
+                        Debug.WriteLine("Failed to access or create the Run registry key.");
+                        return;
+                    }
 
-                if (enable)
-                    key.SetValue(AppName, exePath);
-                else
-                    key.DeleteValue(AppName, false);
+                    string exePath = $"\"{Application.ExecutablePath}\" --silent";
+
+                    if (enable)
+                        key.SetValue(AppName, exePath);
+                    else
+                        key.DeleteValue(AppName, false);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error setting Run on startup: {ex.Message}");
             }
         }
 
         private bool IsRunOnStartupEnabled()
         {
-            using (var key = Registry.CurrentUser.OpenSubKey(RunKeyPath, false))
+            try
             {
-                string exePath = $"\"{Application.ExecutablePath}\" --silent";
-                string value = key?.GetValue(AppName) as string;
-                return value == exePath;
+                using (var key = Registry.CurrentUser.OpenSubKey(RunKeyPath, false) ??
+                                   Registry.CurrentUser.CreateSubKey(RunKeyPath))
+                {
+                    if (key == null)
+                    {
+                        Debug.WriteLine("Failed to access or create the Run registry key.");
+                        return false;
+                    }
+
+                    string exePath = $"\"{Application.ExecutablePath}\" --silent";
+                    string value = key.GetValue(AppName) as string;
+                    return value == exePath;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error checking Run on startup: {ex.Message}");
+                return false;
             }
         }
 
