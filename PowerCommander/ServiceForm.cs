@@ -260,7 +260,8 @@ namespace PowerCommander
                 Height = 150,
                 FormBorderStyle = FormBorderStyle.FixedDialog,
                 Text = "Shutdown Pending",
-                StartPosition = FormStartPosition.CenterScreen
+                StartPosition = FormStartPosition.CenterScreen,
+                TopMost = true
             };
 
             var label = new Label
@@ -313,6 +314,7 @@ namespace PowerCommander
             };
 
             prompt.ShowDialog();
+            prompt.Activate();
         }
 
         #endregion
