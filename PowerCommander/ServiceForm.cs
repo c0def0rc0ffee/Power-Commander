@@ -22,6 +22,7 @@ namespace PowerCommander
         private Timer countdownTimer;
         private Timer scheduleChecker;
         private PowerCommanderSettings settings;
+        private bool isShutdownPromptVisible;
 
         private const string AppName = "Power Commander";
         private const string RunKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Run";
@@ -235,7 +236,12 @@ namespace PowerCommander
         /// Displays the shutdown confirmation prompt with a countdown.
         /// </summary>
         private void ShowShutdownPrompt()
-        { 
+        {
+            if (isShutdownPromptVisible)
+                return;
+
+            isShutdownPromptVisible = true;
+
             // Show tray notification
             trayIcon.BalloonTipTitle = "Shutdown Pending";
             trayIcon.BalloonTipText = $"System will shut down in {secondsLeft} seconds.";
@@ -269,9 +275,7 @@ namespace PowerCommander
             };
             cancelButton.Click += (_, __) =>
             {
-                countdownTimer.Stop();
                 prompt.Close();
-                secondsLeft = DefaultCountdownSeconds;
             };
 
             prompt.Controls.Add(label);
@@ -284,13 +288,25 @@ namespace PowerCommander
                 label.Text = $"Shutting down in {secondsLeft} seconds...";
                 if (secondsLeft <= 0)
                 {
-                    countdownTimer.Stop();
                     prompt.Close();
                     ShutdownMachine();
                 }
             };
 
             countdownTimer.Start();
+
+            prompt.FormClosed += (_, __) =>
+            {
+                if (countdownTimer != null)
+                {
+                    countdownTimer.Stop();
+                    countdownTimer.Dispose();
+                    countdownTimer = null;
+                }
+                secondsLeft = DefaultCountdownSeconds;
+                isShutdownPromptVisible = false;
+            };
+
             prompt.ShowDialog();
         }
 
