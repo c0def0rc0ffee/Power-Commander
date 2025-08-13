@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text.Json;
+using PowerCommanderSettings = PowerCommander.PowerCommanderSettings;
 
 namespace PowerCommander
 {

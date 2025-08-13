@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using PowerCommanderSettings = PowerCommander.PowerCommanderSettings;
 
 namespace PowerCommander
 {
