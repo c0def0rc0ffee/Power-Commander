@@ -21,6 +21,7 @@ namespace PowerCommander
         private NotifyIcon trayIcon;
         private Timer countdownTimer;
         private Timer scheduleChecker;
+        private Timer refreshTimer;
         private PowerCommanderSettings settings;
         private bool isShutdownPromptVisible;
 
@@ -142,12 +143,16 @@ namespace PowerCommander
                 };
                 trayMenu.Items.Add(nextItem);
 
-                // Optional: refresh every minute
-                var refreshTimer = new Timer { Interval = 60000 };
-                refreshTimer.Tick += (s, e) =>
+                // Refresh the label every minute
+                if (refreshTimer == null)
                 {
-                    nextItem.Text = $"Next shutdown: {GetNextShutdownTime()}";
-                };
+                    refreshTimer = new Timer { Interval = 60000 };
+                    refreshTimer.Tick += (s, e) =>
+                    {
+                        nextItem.Text = $"Next shutdown: {GetNextShutdownTime()}";
+                    };
+                }
+
                 refreshTimer.Start();
             }
 
@@ -384,6 +389,13 @@ namespace PowerCommander
                 scheduleChecker.Stop();
                 scheduleChecker.Dispose();
                 scheduleChecker = null;
+            }
+
+            if (refreshTimer != null)
+            {
+                refreshTimer.Stop();
+                refreshTimer.Dispose();
+                refreshTimer = null;
             }
 
             base.OnFormClosing(e);
