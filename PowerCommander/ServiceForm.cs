@@ -1,11 +1,8 @@
 ﻿using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Windows.Forms;
 
 namespace PowerCommander
@@ -42,7 +39,7 @@ namespace PowerCommander
             this.ShowInTaskbar = false;
             this.Visible = false;
 
-            settings = LoadSettings();
+            settings = SettingsLoader.Load();
             InitialiseTrayIcon();
             StartScheduleMonitor();
         }
@@ -199,12 +196,12 @@ namespace PowerCommander
         /// </summary>
         private void StartScheduleMonitor()
         {
-            settings = LoadSettings();
-
+            settings = SettingsLoader.Load();
+            
             scheduleChecker = new Timer { Interval = 60000 }; // Every 1 minute
             scheduleChecker.Tick += (s, e) =>
             {
-                var updatedSettings = LoadSettings();
+                var updatedSettings = SettingsLoader.Load();
                 var now = DateTime.Now;
 
                 bool shouldShutdown = updatedSettings.ShutdownTimes?.Any(t =>
@@ -228,39 +225,6 @@ namespace PowerCommander
             scheduleChecker.Start();
         }
 
-
-        #endregion
-
-        #region Settings Handling
-
-        /// <summary>
-        /// Loads shutdown schedule settings from a JSON file, or creates a default one.
-        /// </summary>
-        /// <returns>Populated settings object.</returns>
-        private PowerCommanderSettings LoadSettings()
-        {
-            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.json");
-
-            if (!File.Exists(path))
-            {
-                var defaultSettings = new PowerCommanderSettings
-                {
-                    LoadService = true,
-                    ShutdownTimes = new List<string> { "21:00" }
-                };
-
-                string defaultJson = JsonSerializer.Serialize(defaultSettings, new JsonSerializerOptions { WriteIndented = true });
-                File.WriteAllText(path, defaultJson);
-
-                return defaultSettings;
-            }
-
-            string json = File.ReadAllText(path);
-            return JsonSerializer.Deserialize<PowerCommanderSettings>(json, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-        }
 
         #endregion
 
