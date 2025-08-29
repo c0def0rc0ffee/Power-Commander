@@ -185,13 +185,18 @@ namespace PowerCommander
 
             var now = DateTime.Now;
 
-            var upcomingTimes = settings.ShutdownTimes
-                .Select(t => TimeSpan.TryParse(t, out var ts) ? DateTime.Today.Add(ts) : DateTime.MaxValue)
-                .Where(dt => dt > now)
+            var nextTime = settings.ShutdownTimes
+                .Select(t => TimeSpan.TryParse(t, out var ts) ? DateTime.Today.Add(ts) : (DateTime?)null)
+                .Where(dt => dt.HasValue)
+                .Select(dt => dt.Value <= now ? dt.Value.AddDays(1) : dt.Value)
                 .OrderBy(dt => dt)
-                .ToList();
+                .FirstOrDefault();
 
-            return upcomingTimes.Count == 0 ? "None today" : upcomingTimes.First().ToString("HH:mm");
+            if (nextTime == default)
+                return "None";
+
+            var timeString = nextTime.ToString("HH:mm");
+            return nextTime.Date > DateTime.Today ? $"{timeString} tomorrow" : timeString;
         }
 
         #endregion
