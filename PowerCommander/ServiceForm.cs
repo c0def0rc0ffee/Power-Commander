@@ -327,11 +327,19 @@ namespace PowerCommander
         #region Shutdown Logic
 
         /// <summary>
+        /// Displays a confirmation dialog with the provided message.
+        /// </summary>
+        private DialogResult ConfirmAction(string message)
+        {
+            return MessageBox.Show(message, "Confirm Action", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+        }
+
+        /// <summary>
         /// Immediately triggers system shutdown, bypassing the countdown.
         /// </summary>
         private void TriggerShutdownSequence()
         {
-            if (MessageBox.Show("Are you sure you wish to shut down your PC?", "Confirm Shutdown", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (ConfirmAction("Are you sure you wish to shut down your PC?") == DialogResult.Yes)
             {
                 secondsLeft = 0;
                 ShutdownMachine();
@@ -343,12 +351,11 @@ namespace PowerCommander
         /// </summary>
         private void TriggerAppExit()
         {
-            if (MessageBox.Show("Are you sure you wish to exit?", "Confirm Goodbye", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (ConfirmAction("Are you sure you wish to exit?") == DialogResult.Yes)
             {
                 Application.Exit();
             }
         }
-
 
 
         /// <summary>
