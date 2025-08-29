@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Diagnostics;
 using System.Text.Json;
 using PowerCommanderSettings = PowerCommander.PowerCommanderSettings;
 
@@ -34,9 +35,20 @@ namespace PowerCommander
 
                 return settings;
             }
-            catch
+            catch (IOException ex)
             {
-                return defaults;
+                Debug.WriteLine($"I/O error while loading settings: {ex}");
+                throw;
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                Debug.WriteLine($"Access error while loading settings: {ex}");
+                throw;
+            }
+            catch (JsonException ex)
+            {
+                Debug.WriteLine($"JSON error while loading settings: {ex}");
+                throw;
             }
         }
 
