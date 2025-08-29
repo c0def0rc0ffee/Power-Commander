@@ -319,7 +319,7 @@ namespace PowerCommander
             };
 
             prompt.ShowDialog();
-            prompt.Activate();
+            prompt.Dispose();
         }
 
         #endregion
